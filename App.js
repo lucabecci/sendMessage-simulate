@@ -1,31 +1,29 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, TextInput, Button, FlatList } from 'react-native';
 
 export default function App() {
-  const [message, setMessage] = React.useState("")
-  const [submit, setsubmit] = React.useState("")
+  const [users, setUsers] = useState([])
+  const [loading, setLoading] = useState(true)
+  useEffect(() => {
+    fetch("https://jsonplaceholder.typicode.com/users")
+    .then(response => response.json())
+    .then(data => {
+      setUsers(data)
+      setLoading(false)
+    })
+  }, [])
 
-  const final = (t) => {
-    alert(t)
+  if(loading){
+    return <Text>Cargando...</Text>
   }
+
   return (
     <View style={styles.container}>
-      <Text>Send message</Text>
-      <TextInput 
-      style={styles.input}
-      placeholder="Insert the message on here"
-      onChangeText={t => setMessage(t)}
-      value={message}
-    />
-    <Button 
-      title="Send"
-      onPress={() => {
-        setsubmit(message)
-        final(message)
-        setMessage("") 
-        setsubmit("") 
-      }}
-    />
+      <FlatList
+        data={users}
+        renderItem={({item}) => <Text>{item.name}</Text>}
+        keyExtractor={item => item.id}
+      />
     </View>
   );
 }
@@ -44,5 +42,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
+    margin: "auto",
+    paddingTop: 200
   }
 });
